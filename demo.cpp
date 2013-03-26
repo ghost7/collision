@@ -55,12 +55,20 @@ int main( void )
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	
 	glm::vec2 tri[3] = {
-		glm::vec2(-1.0f, -1.0f),
-		glm::vec2(1.0f, -1.0f),
-		glm::vec2(0.0f,  1.0f)
+		glm::vec2(-0.5f, -0.5f),
+		glm::vec2(0.5f, -0.5f),
+		glm::vec2(0,  0.5f)
+	};
+
+	glm::vec2 square[4] = {
+		glm::vec2(-0.5f, -0.5f),
+		glm::vec2(0.5f, -0.5f),
+		glm::vec2(0.5f,  0.5f),
+		glm::vec2(-0.5f, 0.5f)
 	};
 	
-	Polygon poly(tri, 3);
+	Polygon poly1(tri, 3);
+	Polygon poly2(square, 4);
 	ShaderProgram shaderProgram;
 	if(!shaderProgram.loadProgram("SimpleVertexShader.vert", "SimpleFragmentShader.frag")) {
 		printf("unable to load shader!\n");
@@ -77,17 +85,42 @@ int main( void )
 	shaderProgram.setProjection(projection);
 	shaderProgram.setView(view);
 
-	poly.translate(5, 5);
+	poly1.translate(1, 1);
+	poly2.translate(5, 5);
 
 	do{
 
 		// Clear the screen
 		glClear( GL_COLOR_BUFFER_BIT );
 
+		if(glfwGetKey(GLFW_KEY_RIGHT) == GLFW_PRESS) {
+			poly1.translate(0.1f, 0);
+		}
+		if(glfwGetKey(GLFW_KEY_LEFT) == GLFW_PRESS) {
+			poly1.translate(-0.1f, 0);
+		}
+		if(glfwGetKey(GLFW_KEY_UP) == GLFW_PRESS) {
+			poly1.translate(0, -0.1f);
+		}
+		if(glfwGetKey(GLFW_KEY_DOWN) == GLFW_PRESS) {
+			poly1.translate(0, 0.1f);
+		}
+
+		if(poly1.intersects(&poly2)) {
+			glClearColor(0.4f, 0.0f, 0.0f, 0.0f);
+		}
+		else {
+			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		}
+
         // The polygon is the "model" that is being rendered.
-        shaderProgram.setModel(poly.getModel());
+        shaderProgram.setModel(poly1.getModel());
 		shaderProgram.updateMVP();
-        PolygonArtist::render(&poly);
+        PolygonArtist::render(&poly1);
+
+        shaderProgram.setModel(poly2.getModel());
+		shaderProgram.updateMVP();
+        PolygonArtist::render(&poly2);
 
 		// Swap buffers
 		glfwSwapBuffers();
