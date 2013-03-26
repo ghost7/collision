@@ -126,3 +126,4 @@ $RECYCLE.BIN/
 
 # Build directory
 build/
+.ycm_extra_conf.pyc

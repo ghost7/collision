@@ -24,9 +24,9 @@ public:
 	ShaderProgram();
 	~ShaderProgram();
 	bool loadProgram(std::string vertexFilePath, std::string fragmentFilePath);
-	void setProjection(glm::mat4 projection);
-	void setView(glm::mat4 view);
-	void setModel(glm::mat4 model);
+	void setProjection(glm::mat4 const & projection);
+	void setView(glm::mat4 const & view);
+	void setModel(glm::mat4 const & model);
 	void updateMVP();
 	bool bind();
 	void unbind();

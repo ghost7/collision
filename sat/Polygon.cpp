@@ -25,3 +25,4 @@ glm::mat4 Polygon::getModel()
 {
 	return model;
 }
+

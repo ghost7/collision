@@ -81,17 +81,17 @@ void ShaderProgram::unbind()
 	glUseProgram(NULL);
 }
 
-void ShaderProgram::setProjection(glm::mat4 projection)
+void ShaderProgram::setProjection(glm::mat4 const & projection)
 {
 	this->projection = projection;
 }
 
-void ShaderProgram::setView(glm::mat4 view)
+void ShaderProgram::setView(glm::mat4 const & view)
 {
 	this->view = view;
 }
 
-void ShaderProgram::setModel(glm::mat4 model)
+void ShaderProgram::setModel(glm::mat4 const & model)
 {
 	this->model = model;
 }

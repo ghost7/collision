@@ -69,24 +69,13 @@ int main( void )
 		shaderProgram.bind();
 	}
 
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	glm::mat4 projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
-	projection = glm::ortho<GLfloat>(0.0, 10, 10, 0.0, 1.0, -1.0);
-	// Camera matrix
-	glm::mat4 view = glm::lookAt(
-		glm::vec3(4,3,3), // Camera is at (4,3,3), in World Space
-		glm::vec3(0,0,0), // and looks at the origin
-		glm::vec3(0,1,0)  // Head is up
-	);
-	view = glm::mat4(1.0f);
-	// Model matrix : an identity matrix (model will be at the origin)
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(5,5,0));
+	// Projection matrix : 10x10 region, bottom right (0,0) 
+    glm::mat4 projection = glm::ortho<GLfloat>(0.0, 10, 10, 0.0, 1.0, -1.0);
+	// Camera matrix: identity
+    glm::mat4 view = glm::mat4();
 
 	shaderProgram.setProjection(projection);
 	shaderProgram.setView(view);
-	shaderProgram.setModel(model);
-	shaderProgram.updateMVP();
 
 	poly.translate(5, 5);
 
@@ -95,8 +84,10 @@ int main( void )
 		// Clear the screen
 		glClear( GL_COLOR_BUFFER_BIT );
 
-		shaderProgram.setModel(poly.getModel());
-		PolygonArtist::render(&poly);
+        // The polygon is the "model" that is being rendered.
+        shaderProgram.setModel(poly.getModel());
+		shaderProgram.updateMVP();
+        PolygonArtist::render(&poly);
 
 		// Swap buffers
 		glfwSwapBuffers();
