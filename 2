@@ -1,0 +1,89 @@
+// Include standard headers
+#include <stdio.h>
+#include <stdlib.h>
+
+// Include GLEW
+#include <GL/glew.h>
+
+// Include GLFW
+#include <GL/glfw.h>
+
+// Include GLM
+#include <glm/glm.hpp>
+
+int main( void )
+{
+    // Initialise GLFW
+	if( !glfwInit() )
+	{
+		fprintf( stderr, "Failed to initialize GLFW\n" );
+		return -1;
+	}
+
+	glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
+	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
+	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 0);
+	//glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	// Open a window and create its OpenGL context
+	if( !glfwOpenWindow( 1024, 768, 0,0,0,0, 32,0, GLFW_WINDOW ) )
+	{
+		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+		glfwTerminate();
+		return -1;
+	}
+
+	// Initialize GLEW
+	glewExperimental = true; // Needed for core profile
+	if (glewInit() != GLEW_OK) {
+		fprintf(stderr, "Failed to initialize GLEW\n");
+		return -1;
+	}
+
+	glfwSetWindowTitle( "Tutorial 02" );
+
+	// Ensure we can capture the escape key being pressed below
+	glfwEnable( GLFW_STICKY_KEYS );
+
+	// Dark blue background
+	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
+	GLuint VertexArrayID;
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
+
+
+	GLfloat triangle[] = { 
+		-1.0f, -1.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f,
+		 0.0f,  1.0f, 0.0f,
+	};
+
+	do{
+
+		// Clear the screen
+		glClear( GL_COLOR_BUFFER_BIT );
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+            
+            glVertexPointer(3, GL_FLOAT, 0, triangle);
+            glDrawArrays(GL_TRIANGLES, 0, 4);
+        
+        glDisableClientState(GL_VERTEX_ARRAY);
+
+		// Swap buffers
+		glfwSwapBuffers();
+
+	} // Check if the ESC key was pressed or the window was closed
+	while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
+		   glfwGetWindowParam( GLFW_OPENED ) );
+
+	// Close OpenGL window and terminate GLFW
+	glfwTerminate();
+
+	// Cleanup VBO
+	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteVertexArrays(1, &VertexArrayID);
+
+	return 0;
+}
