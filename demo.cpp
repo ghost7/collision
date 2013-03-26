@@ -12,8 +12,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "sat\PolygonArtist.h"
-#include "util\ShaderProgram.h"
+#include "sat/PolygonArtist.h"
+#include "util/ShaderProgram.h"
 
 bool loadContent();
 
@@ -28,8 +28,8 @@ int main( void )
 	}
 
 	glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
-	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-	glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 0);
+	//glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
+	//glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 0);
 	//glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
