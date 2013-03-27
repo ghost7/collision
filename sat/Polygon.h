@@ -9,9 +9,17 @@ struct Projection
 	float min;
 	float max;
 
-	bool overlap(Projection other)
+	float getOverlap(Projection other)
 	{
-		return ((min - other.max > 0) || (other.min - max > 0));
+		if(min > other.max || max < other.min) {
+			return 0;
+		}
+		else if (min < other.min) {
+			return max - other.min;
+		}
+		else {
+			return other.max - min;
+		}
 	}
 };
 
@@ -31,7 +39,7 @@ public:
 
 	void translate(float x, float y);
 
-	bool intersects(Polygon* polygon);
+	bool intersects(Polygon* polygon, glm::vec2 &mtv);
 
 	glm::vec2 *getVertices();
 	int getNumVerts();

@@ -1,3 +1,5 @@
+#include <cfloat>
+
 #include "Polygon.h"
 
 
@@ -27,14 +29,25 @@ glm::vec2 transform(glm::vec2 const & vertex, glm::mat4 const & matrix)
 	return glm::vec2(product.x, product.y);
 }
 
-bool Polygon::intersects(Polygon* polygon)
-{
+bool Polygon::intersects(Polygon* polygon, glm::vec2& mtv)
+{ 
+	mtv = glm::vec2(FLT_MAX, FLT_MAX);
+
+	float transtionDist = FLT_MAX;
 	for(int i = 0; i < numVerts; i++) {
 		glm::vec2 axis = normalAxes[i];
 		Projection p1 = project(axis);
 		Projection p2 = polygon->project(axis);
-		if(p1.overlap(p2)) {
+		float overlap = p1.getOverlap(p2);
+		if(overlap == 0) {
+			mtv = glm::vec2(0, 0);
 			return false;
+		}
+		else if(transtionDist > overlap) {
+			transtionDist = overlap;
+			mtv = axis * transtionDist;
+			if (p1.min < p2.min)
+				mtv *= -1;
 		}
 	}
 
@@ -42,8 +55,17 @@ bool Polygon::intersects(Polygon* polygon)
 		glm::vec2 axis = polygon->normalAxes[i];
 		Projection p1 = project(axis);
 		Projection p2 = polygon->project(axis);
-		if(p1.overlap(p2)) {
+		float overlap = p1.getOverlap(p2);
+		if(overlap == 0) {
+			mtv = glm::vec2(0, 0);
 			return false;
+		}
+		overlap = glm::abs(p2.max - p1.min);
+		if(transtionDist > overlap) {
+			transtionDist = overlap;
+			mtv = axis * transtionDist;
+			if (p1.min < p2.min)
+				mtv *= -1;
 		}
 	}
 

@@ -106,8 +106,10 @@ int main( void )
 			poly1.translate(0, 0.1f);
 		}
 
-		if(poly1.intersects(&poly2)) {
+		glm::vec2 mtv;
+		if(poly1.intersects(&poly2, mtv)) {
 			glClearColor(0.4f, 0.0f, 0.0f, 0.0f);
+			poly1.translate(mtv.x, mtv.y);
 		}
 		else {
 			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
