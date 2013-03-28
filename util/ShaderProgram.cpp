@@ -3,68 +3,71 @@
 
 ShaderProgram::ShaderProgram()
 {
-	programID = 0;
+    programID = 0;
 }
 
 ShaderProgram::~ShaderProgram()
 {
-	glDeleteProgram(programID);
+    glDeleteProgram(programID);
 }
 
-bool ShaderProgram::loadProgram(std::string vertexFilePath, std::string fragmentFilePath)
+bool ShaderProgram::loadProgram(std::string vertexFilePath, 
+    std::string fragmentFilePath)
 {
-	programID = glCreateProgram();
+    programID = glCreateProgram();
 
-	// Load the vertex shader
-	GLuint vertexShader = loadShaderFromFile(vertexFilePath, GL_VERTEX_SHADER);
+    // Load the vertex shader
+    GLuint vertexShader = loadShaderFromFile(vertexFilePath, 
+        GL_VERTEX_SHADER);
 
-	if(vertexShader == 0) {
-		glDeleteProgram(programID);
-		programID = 0;
-		return false;
-	}
+    if(vertexShader == 0) {
+        glDeleteProgram(programID);
+        programID = 0;
+        return false;
+    }
 
-	// Load the fragment shader
-	GLuint fragmentShader = loadShaderFromFile(fragmentFilePath, GL_FRAGMENT_SHADER);
+    // Load the fragment shader
+    GLuint fragmentShader = loadShaderFromFile(fragmentFilePath, 
+        GL_FRAGMENT_SHADER);
 
-	if(fragmentShader == 0) {
-		glDeleteShader(vertexShader);
-		glDeleteProgram(programID);
-		programID = 0;
-		return false;
-	}
-	
-	// Attach the shaders and link
-	glAttachShader(programID, vertexShader);
-	glAttachShader(programID, fragmentShader);
-	glLinkProgram(programID);
+    if(fragmentShader == 0) {
+        glDeleteShader(vertexShader);
+        glDeleteProgram(programID);
+        programID = 0;
+        return false;
+    }
 
-	// Don't need the shaders any more
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+    // Attach the shaders and link
+    glAttachShader(programID, vertexShader);
+    glAttachShader(programID, fragmentShader);
+    glLinkProgram(programID);
 
-	// Check for errors
-	GLint programSuccess = GL_TRUE;
-	
-	glGetProgramiv(programID, GL_LINK_STATUS, &programSuccess);
-	if(programSuccess != GL_TRUE) {
-		printf( "Error linking program %d!\n", programID );
+    // Don't need the shaders any more
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    // Check for errors
+    GLint programSuccess = GL_TRUE;
+
+    glGetProgramiv(programID, GL_LINK_STATUS, &programSuccess);
+    if(programSuccess != GL_TRUE) {
+        printf( "Error linking program %d!\n", programID );
         printProgramLog( programID );
         glDeleteProgram( programID );
         programID = 0;
         return false;
-	}
+    }
 
-	matrixID = glGetUniformLocation(programID, "MVP");
-	
-	return true;
+    matrixID = glGetUniformLocation(programID, "MVP");
+
+    return true;
 }
 
 bool ShaderProgram::bind()
 {
-	glUseProgram(programID);
+    glUseProgram(programID);
 
-	//Check for error
+    //Check for error
     GLenum error = glGetError();
     if( error != GL_NO_ERROR ) {
         printf( "Error binding shader! %s\n", gluErrorString( error ) );
@@ -77,72 +80,74 @@ bool ShaderProgram::bind()
 
 void ShaderProgram::unbind()
 {
-	// Use default program
-	glUseProgram(NULL);
+    // Use default program
+    glUseProgram(NULL);
 }
 
 void ShaderProgram::setProjection(glm::mat4 const & projection)
 {
-	this->projection = projection;
+    this->projection = projection;
 }
 
 void ShaderProgram::setView(glm::mat4 const & view)
 {
-	this->view = view;
+    this->view = view;
 }
 
 void ShaderProgram::setModel(glm::mat4 const & model)
 {
-	this->model = model;
+    this->model = model;
 }
 
 void ShaderProgram::updateMVP()
 {
-	glm::mat4 MVP = projection * view * model;
-	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &MVP[0][0]);
+    glm::mat4 MVP = projection * view * model;
+    glUniformMatrix4fv(matrixID, 1, GL_FALSE, &MVP[0][0]);
 }
 
 GLuint ShaderProgram::loadShaderFromFile(std::string path, GLenum shaderType)
 {
-	std::string shaderString;
-	std::ifstream sourceFile(path.c_str());
+    std::string shaderString;
+    std::ifstream sourceFile(path.c_str());
 
-	if(sourceFile)	{
-		// Get shader source
-		shaderString.assign((std::istreambuf_iterator<char>(sourceFile)), std::istreambuf_iterator<char>());
-		return loadShaderString(shaderString, shaderType);
-	}
-	else {
-		printf("Unable to open file %s.\n", path.c_str());
-	}
-	return 0;
+    if(sourceFile)	{
+        // Get shader source
+        shaderString.assign((std::istreambuf_iterator<char>(sourceFile)), 
+            std::istreambuf_iterator<char>());
+        return loadShaderString(shaderString, shaderType);
+    }
+    else {
+        printf("Unable to open file %s.\n", path.c_str());
+    }
+    return 0;
 }
 
 GLuint ShaderProgram::loadShaderString(std::string shaderProgram, GLenum shaderType)
 {
-	int shaderID = glCreateShader(shaderType);
+    int shaderID = glCreateShader(shaderType);
 
-	const GLchar* shaderSource = shaderProgram.c_str();
-	glShaderSource(shaderID, 1, (const GLchar**)&shaderSource, NULL);
+    const GLchar* shaderSource = shaderProgram.c_str();
+    glShaderSource(shaderID, 1, (const GLchar**)&shaderSource, NULL);
 
-	// Compile the shader source
-	glCompileShader(shaderID);
+    // Compile the shader source
+    glCompileShader(shaderID);
 
-	// Check the shader for any errors
-	GLint shaderCompiled = GL_FALSE;
-	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &shaderCompiled);
-	if(shaderCompiled != GL_TRUE) {
-		printf("Unable to compile shader %d!\n\nSource:\n%s\n", shaderID, shaderSource);
-		printShaderLog(shaderID);
-		glDeleteShader(shaderID);
-		shaderID = 0;
-	}
-	return shaderID;
+    // Check the shader for any errors
+    GLint shaderCompiled = GL_FALSE;
+    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &shaderCompiled);
+    if(shaderCompiled != GL_TRUE) {
+        printf("Unable to compile shader %d!\n\nSource:\n%s\n", shaderID, 
+            shaderSource);
+        printShaderLog(shaderID);
+        glDeleteShader(shaderID);
+        shaderID = 0;
+    }
+    return shaderID;
 }
 
 void ShaderProgram::printShaderLog(GLuint shader)
 {
-	//Make sure name is shader
+    //Make sure name is shader
     if( glIsShader( shader ) ) {
         //Shader log length
         int infoLogLength = 0;
@@ -170,7 +175,7 @@ void ShaderProgram::printShaderLog(GLuint shader)
 
 void ShaderProgram::printProgramLog(GLuint program)
 {
-	//Make sure name is shader
+    //Make sure name is shader
     if( glIsProgram( program ) ) {
         //Program log length
         int infoLogLength = 0;
@@ -183,8 +188,7 @@ void ShaderProgram::printProgramLog(GLuint program)
 
         //Get info log
         glGetProgramInfoLog( program, maxLength, &infoLogLength, infoLog );
-        if( infoLogLength > 0 )
-        {
+        if( infoLogLength > 0 ) {
             printf( "%s\n", infoLog );
         }
 
