@@ -15,8 +15,7 @@
 #include "sat/PolygonArtist.h"
 #include "util/ShaderProgram.h"
 
-bool loadContent();
-
+static bool running = true;
 
 int main( void )
 {
@@ -89,7 +88,6 @@ int main( void )
 	poly2.translate(5, 5);
 
 	do{
-
 		// Clear the screen
 		glClear( GL_COLOR_BUFFER_BIT );
 
@@ -124,6 +122,8 @@ int main( void )
 		shaderProgram.updateMVP();
         PolygonArtist::render(&poly2);
 
+		// Enable V-Sync
+		glfwSwapInterval(1);
 		// Swap buffers
 		glfwSwapBuffers();
 
