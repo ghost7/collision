@@ -4,24 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-struct Projection
-{
-	float min;
-	float max;
 
-	float getOverlap(Projection other)
-	{
-		if(min > other.max || max < other.min) {
-			return 0;
-		}
-		else if (min < other.min) {
-			return max - other.min;
-		}
-		else {
-			return other.max - min;
-		}
-	}
-};
 
 class Polygon 
 {
@@ -30,6 +13,16 @@ private:
 	glm::vec2 *vertices;
 	glm::vec2 *normalAxes;
 	glm::mat4 model;
+	class Projection
+	{	
+		float min;
+		float max;
+	public:
+		Projection(float min, float max) : min(min), max(max)
+		{
+		}
+		float getOverlap(Projection other);
+	};
 
 	Projection project(glm::vec2 axis);
 
