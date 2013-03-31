@@ -1,6 +1,22 @@
 # CMake entry point
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 project (Collision)
+
+# Macro to copy files to a specified diectory
+# Arguments:
+#	TARGET	- copy when this target is built
+#	SRC_DIR	- the source directory
+#	DST_DIR - the destination directory
+#	FILES	- files to copy
+MACRO(COPY_IF_DIFFERENT TARGET SRC_DIR DST_DIR FILES)
+	foreach(FILENAME ${FILES})
+		set(SRC "${SRC_DIR}/${FILENAME}")
+		set(DST ${DST_DIR})
+
+		add_custom_command(TARGET ${TARGET} PRE_BUILD
+						   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST})
+	endforeach(FILENAME)
+ENDMACRO(COPY_IF_DIFFERENT TARGET SRC_DIR DST_DIR FILES)
 
 find_package(OpenGL REQUIRED)
 
@@ -48,4 +64,8 @@ target_link_libraries(demo
 )
 
 # Copy shaders to build directory
-file(COPY ${SHADERS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+COPY_IF_DIFFERENT(demo ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} "${SHADERS}")
+
+
+
+
